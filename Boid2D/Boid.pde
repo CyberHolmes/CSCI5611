@@ -4,7 +4,7 @@ static float perceptionRadius = 60;
 static float perceptionAngle = PI*1.5;
 static float separationRadius = 20;
 static float alignFactor = 60; //2
-static float cohesionFactor = 50; //4
+static float cohesionFactor = 2; //4
 static float maxForce = 20; //10
 static float targetSpeed = 15; //10 
 static float COR = 0.7; //bounce factor
@@ -77,11 +77,13 @@ class Boid{
     }
     avgVel.mul(1/(nNeighbors-1));    
     alignForce = avgVel.minus(vel).normalized();
-    alignForce = alignForce.plus(alignForce.times(alignFactor));
+    alignForce = alignForce.times(alignFactor);
+    alignForce.clampToLength(maxForce);
+    //alignForce = alignForce.plus(alignForce.times(alignFactor));
     
     avgPos.mul(1/(nNeighbors-1));
     cohesionForce=avgPos.minus(pos).normalized();
-    cohesionForce.times(cohesionFactor);
+    cohesionForce = cohesionForce.times(cohesionFactor);
     cohesionForce.clampToLength(maxForce);
     
     acc = separationForce.plus(cohesionForce).plus(alignForce);
