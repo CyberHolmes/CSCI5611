@@ -5,9 +5,9 @@ This program compares 4 numerical integration methods with ground truth (underly
 This program evaluates 7 different functions controlled by a global variable c (defined in HW2_Part1.pde).  
 This program outputs comparison results in console, as well as a csv .txt file.  
 This program also plots data and saves the plot as a .jpg file.  
-All results files are saved in the same folder as the program them selves.  
+All results files are saved in the same folder as the program themselves.  
 
-## To select which function to evluate, set initial conditions, step size and number of steps:
+## To select which function to evaluate, set initial conditions, step size and number of steps:
 #### Set corresponding global variables (line 13 through 23 in HW2_Part1)
 >int c = 6; //Choosing functions  
 >> //0: dx/dt=cos(t)  
