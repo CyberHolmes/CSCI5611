@@ -8,7 +8,7 @@ This program also plots data and saves the plot as a .jpg file.
 All results files are saved in the same folder as the program them selves.  
 
 ## To select which function to evluate, set initial conditions, step size and number of steps:
-#### Set corresponding global vaiables (line 13 through 23 in HW2_Part1)
+#### Set corresponding global variables (line 13 through 23 in HW2_Part1)
 >int c = 6; //Choosing functions  
 >> //0: dx/dt=cos(t)  
 >> //1: dx/dx = 2*t*cos(t^2)  
