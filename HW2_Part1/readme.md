@@ -22,5 +22,4 @@
 >float t_start = 0; 
   
 #### Examples of output plots  
-![alt text](https://github.com/CyberHolmes/CSCI5611/blob/master/HW2_Part1/outputData%26Plots/plot_6_x0.0_dt1.0_1593122041.jpg)  
-![alt text](https://github.com/CyberHolmes/CSCI5611/blob/master/HW2_Part1/outputData%26Plots/plot_0_x0.0_dt1.0_1593121768.jpg)  
+![alt text](https://github.com/CyberHolmes/CSCI5611/blob/master/HW2_Part1/outputData%26Plots/plot_6_x_0.0_dt_1.0_steps_20_1593218849.jpg)  
