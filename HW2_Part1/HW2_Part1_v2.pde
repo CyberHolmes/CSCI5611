@@ -10,7 +10,7 @@ PFont labelFont;
 ArrayList<Float> x_all_eu, x_all_mid, x_all_rk4, x_all_heun;
 ArrayList<Float> x_actual;
 
-int c = 6; //Choosing functions
+int c = 0; //Choosing functions
 // 0:dx/dt=cos(t)
 // 1: dx/dx = 2*t*cos(t*t)
 // 2: dx/dt = 2
@@ -20,7 +20,7 @@ int c = 6; //Choosing functions
 // 6: dx/dt = sin(t) + t*cos(t) 
 float x_start = 0; //0
 float dt = 1; //1
-int n_steps = 20;
+int n_steps = 10;
 float t_start = 0;
 float t_end = t_start + n_steps * dt;
 float[] t_display = new float[n_steps+1];
@@ -33,9 +33,9 @@ void RunComparisons(int c) {
   println();
   
   float x_end;
-  float actual_end = correctActual(actual(t_end,c),t_start,x_start,c); // the real functions may have a different shift depending on the inital condition and the form of function, correct it
+  float actual_end = correctActual(actual(t_end),t_start,x_start); // the real functions may have a different shift depending on the inital condition and the form of function, correct it
   
-  ArrayList<Float> x_actual_raw = actualList(t_start,n_steps,dt,c);
+  ArrayList<Float> x_actual_raw = actualList(t_start,n_steps,dt);
   // the real functions may have a different shift depending on the inital condition and the form of function, correct it
   x_actual = new ArrayList<Float>();
   x_all_eu = new ArrayList<Float>();
@@ -43,56 +43,66 @@ void RunComparisons(int c) {
   x_all_rk4 = new ArrayList<Float>();
   x_all_heun = new ArrayList<Float>();
   for (float val: x_actual_raw)
-    x_actual.add(correctActual(val,t_start,x_start,c));
+    x_actual.add(correctActual(val,t_start,x_start));
   
   
   //Integrate using Eulerian integration
   println("Eulerian: "+getFunction(c));
-  x_end = eulerian(t_start,x_start,n_steps,dt,c);
+  x_end = eulerian(t_start,x_start,n_steps,dt);
   println("f(t) for t =",t_end,"is",x_end," Ground truth:", actual_end," Error is", actual_end-x_end);
 
   println("Printing Each Step--");
-  x_all_eu = eulerianList(t_start,x_start,n_steps,dt,c);
+  x_all_eu = eulerianList(t_start,x_start,n_steps,dt);
   println("Aprox:",x_all_eu);
   println("Actual:",x_actual);
   
 
   //Integrate using Midpiont integration
   println("\nMidpoint: "+getFunction(c));
-  x_end= midpoint(t_start,x_start,n_steps,dt,c);
+  x_end= midpoint(t_start,x_start,n_steps,dt);
   println("f(t) for t =",t_end,"is",x_end," Ground truth:", actual_end," Error is", actual_end-x_end);
   
   println("Printing Each Step--");
-  x_all_mid = midpointList(t_start,x_start,n_steps,dt,c);
+  x_all_mid = midpointList(t_start,x_start,n_steps,dt);
   println("Aprox:",x_all_mid);
   println("Actual:",x_actual);
   
   
   //Integrate using RK4 (4th order Runge–Kutta)
   println("\nRK4: "+getFunction(c));
-  x_end= rk4(t_start,x_start,n_steps,dt,c);
+  x_end= rk4(t_start,x_start,n_steps,dt);
   println("f(t) for t =",t_end,"is",x_end," Ground truth:", actual_end," Error is", actual_end-x_end);
   
   println("Printing Each Step--");
-  x_all_rk4 = rk4List(t_start,x_start,n_steps,dt,c);
+  x_all_rk4 = rk4List(t_start,x_start,n_steps,dt);
   println("Aprox:",x_all_rk4);
   println("Actual:",x_actual);
   
   
   //For comparison, this is Heun's method, a different 2nd order method (similar to midpoint)
   println("\nHeun: "+getFunction(c));
-  x_end= heun(t_start,x_start,n_steps,dt,c);
+  x_end= heun(t_start,x_start,n_steps,dt);
   println("f(t) for t =",t_end,"is",x_end," Ground truth:", actual_end," Error is", actual_end-x_end);
   
   println("Printing Each Step--");
-  x_all_heun = heunList(t_start,x_start,n_steps,dt,c);
+  x_all_heun = heunList(t_start,x_start,n_steps,dt);
   println("Aprox:",x_all_heun);
   println("Actual:",x_actual);
+  
+  //Print results to file
+  for (int i=0; i<n_steps; i++) {
+    String sf_actual = nf(x_actual.get(i), 0, 5);
+    String sf_eu = nf(x_all_eu.get(i), 0, 5);
+    String sf_mid = nf(x_all_mid.get(i), 0, 5);
+    String sf_rk4 = nf(x_all_rk4.get(i), 0, 5);
+    String sf_heun = nf(x_all_heun.get(i), 0, 5);
+    output.println((t_start + dt*i) + "," + sf_actual + "," + sf_eu + "," + sf_mid + "," + sf_rk4 + "," + sf_heun + "," + getFunction(c) + "," + getGroundTruthFunction(c));
+  }
 }
 
 // the real functions may have a different shift depending on the inital condition, this function does the correction
-float correctActual(float val, float t_start, float x_start, int c) {
-  return x_start + val - actual(t_start,c);
+float correctActual(float val, float t_start, float x_start) {
+  return x_start + val - actual(t_start);
 }
 
 void setup(){
@@ -100,16 +110,15 @@ void setup(){
   labelFont = loadFont("GillSansMT-48.vlw");
   Date d = new Date();
   long current = d.getTime()/1000; 
-  outputFileName = c+"_x"+x_start+"_dt"+dt+"_"+current;
+  outputFileName = c+"_x_"+x_start+"_dt_"+dt+"_steps_"+n_steps+"_"+current;
   output = createWriter("data_"+outputFileName+".txt");
-  output.println("t,x,dxdt,method"); //print column names in data file
+  output.println("t,Actual,Eulerian,Midpoint,Rk4,Heun,dxdt,function"); //print column names in data file
   
   // Compare with actual functions   
   RunComparisons(c);
   
   output.flush(); // Writes the remaining data to the file
   output.close(); // Finishes the file
-  
 }
 
 void draw(){
@@ -272,6 +281,27 @@ public String getFunction(int c){
       return "dx/dt = sin(t) + t*cos(t)";      
     default:
       return "none";      
+    }
+}
+
+public String getGroundTruthFunction(int c){
+    switch (c) {
+    case 0:
+      return "sin(t)";
+    case 1:
+      return "sin(t*t)";
+    case 2:
+      return "2*t";
+    case 3:
+      return "t*t";
+    case 4:
+      return "pow(t,4)/4";
+    case 5:
+      return "exp(t)";
+    case 6:
+      return "t*sin(t)";
+    default:
+      return "none";
     }
 }
 
