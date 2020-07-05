@@ -1,11 +1,10 @@
 # Readme #
-    
-This program package contains 3 .pde files and one data folder containing a font file.  
-This program compares 4 numerical integration methods with ground truth (underlying function evaluation).  
-This program evaluates 7 different functions controlled by a global variable c (defined in HW2_Part1.pde).  
-This program outputs comparison results in console, as well as a csv .txt file.  
-This program also plots data and saves the plot as a .jpg file.  
-All results files are saved in the same folder as the program themselves.  
+## Achieved Elements in this Assignment:  
+* Added midpoint algorithm to _Integrator.pde_  
+* Added all 7 underlying functions to _GroundTruth.pde_  
+* Added plotting codes to _HW2_Part1_v2.pde_  
+* Added data file saving codes to _HW2_Part1_v2.pde_   
+ 
 
 ## To select which function to evaluate, set initial conditions, step size and number of steps:
 #### Set corresponding global variables (line 13 through 23 in HW2_Part1)
@@ -23,5 +22,4 @@ All results files are saved in the same folder as the program themselves.
 >float t_start = 0; 
   
 #### Examples of output plots  
-![alt text](https://github.com/CyberHolmes/CSCI5611/blob/master/HW2_Part1/outputData%26Plots/plot_6_x0.0_dt1.0_1593122041.jpg)  
-![alt text](https://github.com/CyberHolmes/CSCI5611/blob/master/HW2_Part1/outputData%26Plots/plot_0_x0.0_dt1.0_1593121768.jpg)  
+![alt text](https://github.com/CyberHolmes/CSCI5611/blob/master/HW2_Part1/outputData%26Plots/plot_6_x_0.0_dt_1.0_steps_20_1593218849.jpg)  
