@@ -62,7 +62,7 @@ ArrayList<Integer> getNeighbors(Vec2 point, Vec2[] centers, float[] radii, Vec2[
   return neighborList;
 }
 
-ArrayList<Integer> planPath(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[] radii, int numObstacles, Vec2[] nodePos, int numNodes){
+ArrayList<Integer> planPath2(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[] radii, int numObstacles, Vec2[] nodePos, int numNodes){
   ArrayList<Integer> path = new ArrayList();
   
   connectNeighbors(centers, radii, numObstacles, nodePos, numNodes);
@@ -123,6 +123,34 @@ ArrayList<Integer> planPath(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[]
       }      
     }
   }  
+  return path;
+}
+
+ArrayList<Integer> planPath(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[] radii, int numObstacles, Vec2[] nodePos, int numNodes){
+  ArrayList<Integer> path = new ArrayList();
+  
+  nodePos[numNodes] = new Vec2(startPos.x, startPos.y);numNodes++;
+  int startID = numNodes-1;
+  nodePos[numNodes] = new Vec2(goalPos.x, goalPos.y);numNodes++;
+  int goalID = numNodes-1;
+  
+  connectNeighbors(centers, radii, numObstacles, nodePos, numNodes);
+  //int startID = closestNode(startPos, nodePos, numNodes);
+  //int goalID = closestNode(goalPos, nodePos, numNodes);
+  
+  if (AStarEnable){
+    println("op1: AStar Search Method");
+    calchScore(numNodes, goalID);
+    path = runAStar(nodePos, numNodes, startID, goalID);
+  }
+  if (BFSEnable) { 
+    println("op1: BFS Search Method");
+    path = runBFS(nodePos, numNodes, startID, goalID);
+  } 
+  if (path.get(0) != -1) {
+    path.remove(0); //pop off start node from path
+    path.remove(path.size()-1); //remove extra goal node
+  }
   return path;
 }
 
@@ -267,32 +295,4 @@ void calchScore2(int numNodes){
   for (int i=0; i < numNodes; i++) {
     hScore2[i] = nodePos[i].distanceTo(goalPos);
   }
-}
-
-ArrayList<Integer> planPath2(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[] radii, int numObstacles, Vec2[] nodePos, int numNodes){
-  ArrayList<Integer> path = new ArrayList();
-  
-  nodePos[numNodes] = new Vec2(startPos.x, startPos.y);numNodes++;
-  int startID = numNodes-1;
-  nodePos[numNodes] = new Vec2(goalPos.x, goalPos.y);numNodes++;
-  int goalID = numNodes-1;
-  
-  connectNeighbors(centers, radii, numObstacles, nodePos, numNodes);
-  //int startID = closestNode(startPos, nodePos, numNodes);
-  //int goalID = closestNode(goalPos, nodePos, numNodes);
-  
-  if (AStarEnable){
-    println("op1: AStar Search Method");
-    calchScore(numNodes, goalID);
-    path = runAStar(nodePos, numNodes, startID, goalID);
-  }
-  if (BFSEnable) { 
-    println("op1: BFS Search Method");
-    path = runBFS(nodePos, numNodes, startID, goalID);
-  } 
-  if (path.get(0) != -1) {
-    path.remove(0); //pop off start node from path
-    path.remove(path.size()-1); //remove extra goal node
-  }
-  return path;
 }

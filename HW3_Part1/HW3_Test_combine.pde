@@ -15,9 +15,8 @@ String str1 = "Op1";
 String str2 = "AStar";
 
 //Change the below parameters to change the scenario/roadmap size
-int numObstacles = 20;
-int numNodes  = 20;
-  
+int numObstacles = 100;
+int numNodes  = 100;  
   
 //A list of circle obstacles
 static int maxNumObstacles = 1000;
@@ -137,9 +136,9 @@ void testPRM(){
 
   generateRandomNodes(numNodes, circlePos, circleRad);
   startTime = millis();
-  if (op2Enable){
+  if (op1Enable){
   curPath = planPath(startPos, goalPos, circlePos, circleRad, numObstacles, nodePos, numNodes);
-  } else if (op1Enable){
+  } else if (op2Enable){
   curPath = planPath2(startPos, goalPos, circlePos, circleRad, numObstacles, nodePos, numNodes);
   }
   endTime = millis();
@@ -272,9 +271,9 @@ void mousePressed(){
 void printTestResults(){
   long startTime, endTime;
   startTime = millis();
-  if (op2Enable){
+  if (op1Enable){
   curPath = planPath(startPos, goalPos, circlePos, circleRad, numObstacles, nodePos, numNodes);
-  } else if (op1Enable){
+  } else if (op2Enable){
   curPath = planPath2(startPos, goalPos, circlePos, circleRad, numObstacles, nodePos, numNodes);
   }
   endTime = millis();
