@@ -10,7 +10,7 @@
 // The arrow keys will move the circular obstacle with the heavy outline
 // Pressing 'r' will randomize the obstacles and re-run the tests
 import java.util.*;
-
+boolean op1Enable = true,op2Enable=false;
 String str1 = "Op1";
 String str2 = "AStar";
 

@@ -1,10 +1,9 @@
 //CSCI5611 HW3 Hailin Archer Implementation 1:
 //Modified existing code and additions:
 //  1. Added A* search algorithm, enabled by default
-//  2. closestNode(): 
-//      2.1 Skip isolated nodes (no edge to graph; 
-//      2.2 Does not consider nodes with obstructed path to the start/goal
-//  2. planPath: check if there is direct un-obstructed path between start and goal first, return empty path if there is.
+//  2. Two planPath options: 
+//      2.1 Add start and goal to node network before drawing graph; 
+//      2.2 Separate getNeibors() function to find nearest valid nodes for start and goal
 //  3. return empty path if there is direct unobstructed path between start and goal
 
 //Here, we represent our graph structure as a neighbor list
@@ -20,7 +19,6 @@ float[] hScore2 = new float[maxNumNodes];
 float inf = 99999; //infinity value for initial scores (A* algorithm)
 Boolean AStarEnable = true;
 Boolean BFSEnable = false;
-boolean op1Enable = true,op2Enable=false;
 
 //Set which nodes are connected to which neighbors (graph edges) based on PRM rules
 void connectNeighbors(Vec2[] centers, float[] radii, int numObstacles, Vec2[] nodePos, int numNodes){
