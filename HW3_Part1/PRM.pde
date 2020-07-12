@@ -36,7 +36,7 @@ void connectNeighbors(Vec2[] centers, float[] radii, int numObstacles, Vec2[] no
   }
 }
 
-//getNeighbors method, neighbor with the shortest distance to me is on top
+//getNeighbors method, return sorted neighbors
 ArrayList<Integer> getNeighbors(Vec2 point, Vec2[] centers, float[] radii, Vec2[] nodePos, int numNodes){
   ArrayList<Integer> neighborList = new ArrayList<Integer>();
   ArrayList<Float> distList = new ArrayList<Float>();
@@ -47,11 +47,6 @@ ArrayList<Integer> getNeighbors(Vec2 point, Vec2[] centers, float[] radii, Vec2[
     Vec2 dir = point.minus(nodePos[i]).normalized();
     hitInfo circleListCheck = rayCircleListIntersect(centers, radii, numObstacles, nodePos[i], dir, dist);
     if (!circleListCheck.hit){
-      //if (dist < minDist){
-      //minDist = dist;
-      //neighborList.add(0,i);
-      //} else
-      //{neighborList.add(i);}
       int ii=0;
       for (ii=0; ii<distList.size()-1; ii++){
         if (dist<distList.get(ii)) {distList.add(ii,dist); neighborList.add(ii,i);inserted = true; break;}
@@ -76,8 +71,11 @@ ArrayList<Integer> planPath2(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[
   //Variables to keep track of start and goal direct neighbors
   ArrayList<Integer> startNeighbors = getNeighbors(startPos, centers, radii, nodePos, numNodes);
   ArrayList<Integer> goalNeighbors = getNeighbors(goalPos, centers, radii, nodePos, numNodes);
-  if (startNeighbors.isEmpty()) return path; //if there is no direct node to start, return empty path
-  if (goalNeighbors.isEmpty()) return path;
+  if (startNeighbors.isEmpty() || goalNeighbors.isEmpty()) { //if there is no direct node to start/goal, return {-1} path
+    //println("No Path");
+    path.add(0,-1);
+    return path;
+  }
 
   boolean done = false;
   int startID = startNeighbors.get(0);
