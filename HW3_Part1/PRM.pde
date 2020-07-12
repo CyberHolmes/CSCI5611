@@ -82,10 +82,14 @@ ArrayList<Integer> planPath2(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[
     startNeighbors.remove(0);
     int goalID = goalNeighbors.get(0);
     goalNeighbors.remove(0);
-  while (AStarEnable && !done){
+  while (!done){
     println("Op2: AStar Search Method");    
     calchScore(numNodes, goalID);
-    path = runAStar(nodePos, numNodes, startID, goalID);
+    if (AStarEnable){
+      path = runAStar(nodePos, numNodes, startID, goalID);
+    } else if (BFSEnable){
+      path = runBFS(nodePos, numNodes, startID, goalID);
+    }
     done = true;
     if (path.size() == 1 && path.get(0) == -1){ //If no path found, try the next direct neighbor
       if (!startNeighbors.isEmpty()) {
@@ -102,25 +106,6 @@ ArrayList<Integer> planPath2(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[
       }      
     }
   }
-  while (BFSEnable && !done){
-    println("Op2: BFS Search Method");    
-    path = runBFS(nodePos, numNodes, startID, goalID);
-    done = true;
-    if (path.size() == 1 && path.get(0) == -1){ //If no path found, try the next direct neighbor
-      if (!startNeighbors.isEmpty()) {
-        startID = startNeighbors.get(0);
-        startNeighbors.remove(0);
-        done = false;
-      }
-      if (done) { //only check if all neighbors of start had been visited
-        if (!goalNeighbors.isEmpty()) {
-          goalID = goalNeighbors.get(0);
-          goalNeighbors.remove(0);
-          done = false;
-        }
-      }      
-    }
-  }  
   return path;
 }
 
@@ -133,8 +118,6 @@ ArrayList<Integer> planPath(Vec2 startPos, Vec2 goalPos, Vec2[] centers, float[]
   int goalID = numNodes-1;
   
   connectNeighbors(centers, radii, numObstacles, nodePos, numNodes);
-  //int startID = closestNode(startPos, nodePos, numNodes);
-  //int goalID = closestNode(goalPos, nodePos, numNodes);
   
   if (AStarEnable){
     println("op1: AStar Search Method");
