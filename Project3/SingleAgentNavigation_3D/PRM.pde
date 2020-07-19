@@ -33,16 +33,15 @@ void connectNeighbors(Vec3[] centers, float[] radii, int numObstacles, Vec3[] no
 
 ArrayList<Integer> planPath(Vec3 startPos, Vec3 goalPos, Vec3[] centers, float[] radii, int numObstacles, Vec3[] nodePos, int numNodes){
   ArrayList<Integer> path = new ArrayList();
-  
-  connectNeighbors(centers, radii, numObstacles, nodePos, numNodes);
 
+  connectNeighbors(centers, radii, numObstacles, nodePos, numNodes);
   path = runAStar(nodePos, numNodes, startPos, goalPos, centers, radii);
 
   return path;
 }
 
 //A* search method
-ArrayList<Integer> runAStar(Vec3[] nodePos, int numNodes, Vec3 startPos, Vec3 goalPos, Vec3[] centers, float[] radii){
+ArrayList<Integer> runAStar(Vec3[] nodePos, int numNodesL, Vec3 startPos, Vec3 goalPos, Vec3[] centers, float[] radii){
   ArrayList<Integer> path = new ArrayList();
   boolean goalFound = false;
   ArrayList<Integer> fringe = new ArrayList();  //New empty fringe  
@@ -59,8 +58,8 @@ ArrayList<Integer> runAStar(Vec3[] nodePos, int numNodes, Vec3 startPos, Vec3 go
   //  return path;
   //}
   ////Add start/goal to node network
-  int startID = numNodes; nodePos[numNodes++]=startPos;
-  int goalID = numNodes; nodePos[numNodes++]=goalPos;
+  int startID = numNodesL; nodePos[startID]=startPos;numNodesL++;
+  int goalID = numNodesL; nodePos[goalID]=goalPos;numNodesL++;
   neighbors[startID] = new ArrayList<Integer>(); //initialize neighborlist for start
   neighbors[goalID] = new ArrayList<Integer>(); //initialize neighborlist for goal 
   
@@ -70,7 +69,7 @@ ArrayList<Integer> runAStar(Vec3[] nodePos, int numNodes, Vec3 startPos, Vec3 go
   fringe.add(startID);
   //visited[goalID] = true;
   //fringe.add(goalID);
-  for (int i = 0; i < numNodes; i++) { //exclude goal ID
+  for (int i = 0; i < numNodesL; i++) { //exclude goal ID
     visited[i] = false;
     parent[i] = -1; //No parent yet
     hScore[i] = nodePos[i].distanceTo(goalPos); //asign hscore
