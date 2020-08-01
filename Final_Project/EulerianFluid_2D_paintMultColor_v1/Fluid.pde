@@ -117,7 +117,7 @@ class Fluid{
         float vx = u[IX(i, j)];
         float vy = v[IX(i, j)];
         stroke(0);
-        strokeWeight(1);
+        strokeWeight(3);
         if (!(abs(vx) < 0.1 && abs(vy) <= 0.1)) {
           line(x, y, x+vx*M, y+vy*M );
         }

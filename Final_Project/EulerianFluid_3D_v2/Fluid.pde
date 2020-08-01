@@ -1,8 +1,8 @@
-//Most functions in 3D Fluid are adapted from Mike Ash's Fluid Simulation For Dummies
-//, which is based on Jos Stam's Real_Time Fluid Dynamics for Games
+//Many functions in 3D Fluid are adapted from Mike Ash's Fluid Simulation For Dummies
+//, which are based on Jos Stam's Real_Time Fluid Dynamics for Games
 int IX(int i, int j, int k) {
-  i=constrain(i,0,N-1); j=constrain(j,0,N-1);k=constrain(k,0,N-1);
-  return i + (N)*j + (N)*(N)*k;};
+  i=constrain(i,0,Nx-1); j=constrain(j,0,Ny-1);k=constrain(k,0,Nz-1);
+  return i + (Nx)*j + (Nx)*(Ny)*k;};
 
 class Fluid{
   int size;
@@ -21,7 +21,7 @@ class Fluid{
     float[] Vz0;
     
     Fluid(float Kd, float Kv) {
-      size = N*N*N;
+      size = Nx*Ny*Nz;
       diff = Kd;
       visc = Kv;
       
@@ -60,13 +60,13 @@ class Fluid{
       diffuse(2, Vy0, Vy, visc, dt, 4);
       diffuse(3, Vz0, Vz, visc, dt, 4);
       
-      project(Vx0, Vy0, Vz0, Vx, Vy, 3);
+      project(Vx0, Vy0, Vz0, Vx, Vy, 4);
       
       advect(1, Vx, Vx0, Vx0, Vy0, Vz0, dt);
       advect(2, Vy, Vy0, Vx0, Vy0, Vz0, dt);
       advect(3, Vz, Vz0, Vx0, Vy0, Vz0, dt);
       
-      project(Vx, Vy, Vz, Vx0, Vy0, 3);
+      project(Vx, Vy, Vz, Vx0, Vy0, 4);
       
       diffuse(0, dens0, dens, diff, dt, 4);
       advect(0, dens, dens0, Vx, Vy, Vz, dt);
@@ -74,9 +74,9 @@ class Fluid{
     void show() {    
     //colorMode(HSB, 255);
     //colorMode(RGB,100);
-    for (int k=0 ; k< N ; k++ ) {
-     for (int j = 0; j < N; j++) {
-      for (int i = 0; i < N; i++) {
+    for (int k=0 ; k< Nz ; k++ ) {
+     for (int j = 0; j < Ny; j++) {
+      for (int i = 0; i < Nx; i++) {
         float d = dens[IX(i, j, k)];
         if (d<20) continue;
         float x = i * (M)+xStart;
@@ -91,7 +91,7 @@ class Fluid{
         if (d>60){
           fill(r*255,g*255,b*255,d-20);        
         } else if (d>20) {
-          fill(180,d+20);
+          fill(80,d+20);
         }
         box(M);
         popMatrix();
@@ -121,58 +121,58 @@ class Fluid{
 
 void set_bnd(int b, float[] x)
 {
-    for(int j = 1; j < N - 1; j++) {
-        for(int i = 1; i < N - 1; i++) {
+    for(int j = 1; j < Ny - 1; j++) {
+        for(int i = 1; i < Nx - 1; i++) {
             x[IX(i, j, 0  )] = b == 3 ? -x[IX(i, j, 1  )] : x[IX(i, j, 1  )];
-            x[IX(i, j, N-1)] = b == 3 ? -x[IX(i, j, N-2)] : x[IX(i, j, N-2)];
+            x[IX(i, j, Nz-1)] = b == 3 ? -x[IX(i, j, Nz-2)] : x[IX(i, j, Nz-2)];
         }
     }
-    for(int k = 1; k < N - 1; k++) {
-        for(int i = 1; i < N - 1; i++) {
+    for(int k = 1; k < Nz - 1; k++) {
+        for(int i = 1; i < Nx - 1; i++) {
             x[IX(i, 0  , k)] = b == 2 ? -x[IX(i, 1  , k)] : x[IX(i, 1  , k)];
-            x[IX(i, N-1, k)] = b == 2 ? -x[IX(i, N-2, k)] : x[IX(i, N-2, k)];
+            x[IX(i, Ny-1, k)] = b == 2 ? -x[IX(i, Ny-2, k)] : x[IX(i, Ny-2, k)];
         }
     }
-    for(int k = 1; k < N - 1; k++) {
-        for(int j = 1; j < N - 1; j++) {
+    for(int k = 1; k < Nz - 1; k++) {
+        for(int j = 1; j < Ny - 1; j++) {
             x[IX(0  , j, k)] = b == 1 ? -x[IX(1  , j, k)] : x[IX(1  , j, k)];
-            x[IX(N-1, j, k)] = b == 1 ? -x[IX(N-2, j, k)] : x[IX(N-2, j, k)];
+            x[IX(Nx-1, j, k)] = b == 1 ? -x[IX(Nx-2, j, k)] : x[IX(Nx-2, j, k)];
         }
     }
     
     x[IX(0, 0, 0)]       = 0.33f * (x[IX(1, 0, 0)]
                                   + x[IX(0, 1, 0)]
                                   + x[IX(0, 0, 1)]);
-    x[IX(0, N-1, 0)]     = 0.33f * (x[IX(1, N-1, 0)]
-                                  + x[IX(0, N-2, 0)]
-                                  + x[IX(0, N-1, 1)]);
-    x[IX(0, 0, N-1)]     = 0.33f * (x[IX(1, 0, N-1)]
-                                  + x[IX(0, 1, N-1)]
-                                  + x[IX(0, 0, N)]);
-    x[IX(0, N-1, N-1)]   = 0.33f * (x[IX(1, N-1, N-1)]
-                                  + x[IX(0, N-2, N-1)]
-                                  + x[IX(0, N-1, N-2)]);
-    x[IX(N-1, 0, 0)]     = 0.33f * (x[IX(N-2, 0, 0)]
-                                  + x[IX(N-1, 1, 0)]
-                                  + x[IX(N-1, 0, 1)]);
-    x[IX(N-1, N-1, 0)]   = 0.33f * (x[IX(N-2, N-1, 0)]
-                                  + x[IX(N-1, N-2, 0)]
-                                  + x[IX(N-1, N-1, 1)]);
-    x[IX(N-1, 0, N-1)]   = 0.33f * (x[IX(N-2, 0, N-1)]
-                                  + x[IX(N-1, 1, N-1)]
-                                  + x[IX(N-1, 0, N-2)]);
-    x[IX(N-1, N-1, N-1)] = 0.33f * (x[IX(N-2, N-1, N-1)]
-                                  + x[IX(N-1, N-2, N-1)]
-                                  + x[IX(N-1, N-1, N-2)]);
+    x[IX(0, Ny-1, 0)]     = 0.33f * (x[IX(1, Ny-1, 0)]
+                                  + x[IX(0, Ny-2, 0)]
+                                  + x[IX(0, Ny-1, 1)]);
+    x[IX(0, 0, Nz-1)]     = 0.33f * (x[IX(1, 0, Nz-1)]
+                                  + x[IX(0, 1, Nz-1)]
+                                  + x[IX(0, 0, Nz)]);
+    x[IX(0, Ny-1, Nz-1)]   = 0.33f * (x[IX(1, Ny-1, Nz-1)]
+                                  + x[IX(0, Ny-2, Nz-1)]
+                                  + x[IX(0, Ny-1, Nz-2)]);
+    x[IX(Nx-1, 0, 0)]     = 0.33f * (x[IX(Nx-2, 0, 0)]
+                                  + x[IX(Nx-1, 1, 0)]
+                                  + x[IX(Nx-1, 0, 1)]);
+    x[IX(Nx-1, Ny-1, 0)]   = 0.33f * (x[IX(Nx-2, Ny-1, 0)]
+                                  + x[IX(Nx-1, Ny-2, 0)]
+                                  + x[IX(Nx-1, Ny-1, 1)]);
+    x[IX(Nx-1, 0, Nz-1)]   = 0.33f * (x[IX(Nx-2, 0, Nz-1)]
+                                  + x[IX(Nx-1, 1, Nz-1)]
+                                  + x[IX(Nx-1, 0, Nz-2)]);
+    x[IX(Nx-1, Ny-1, Nz-1)] = 0.33f * (x[IX(Nx-2, Ny-1, Nz-1)]
+                                  + x[IX(Nx-1, Ny-2, Nz-1)]
+                                  + x[IX(Nx-1, Ny-1, Nz-2)]);
 }
 
 void lin_solve(int b, float[] x, float[] x0, float a, float c, int iter)
 {
     float cRecip = 1.0 / c;
     for (int k = 0; k < iter; k++) {
-        for (int m = 1; m < N - 1; m++) {
-            for (int j = 1; j < N - 1; j++) {
-                for (int i = 1; i < N - 1; i++) {
+        for (int m = 1; m < Nz - 1; m++) {
+            for (int j = 1; j < Ny - 1; j++) {
+                for (int i = 1; i < Nx - 1; i++) {
                     x[IX(i, j, m)] =
                         (x0[IX(i, j, m)]
                             + a*(    x[IX(i+1, j  , m  )]
@@ -190,16 +190,17 @@ void lin_solve(int b, float[] x, float[] x0, float a, float c, int iter)
 }
 
 void diffuse (int b, float[] x, float[] x0, float diff, float dt, int iter)
-{
-    float a = dt * diff * (N - 2) * (N - 2);
+{  
+  float a = dt * diff * (Nx - 2) * (Ny - 2);
     lin_solve(b, x, x0, a, 1 + 6 * a, iter);
 }
 
 void project(float[] velocX, float[] velocY, float[] velocZ, float[] p, float[] div, int iter)
 {
-    for (int k = 1; k < N - 1; k++) {
-        for (int j = 1; j < N - 1; j++) {
-            for (int i = 1; i < N - 1; i++) {
+  int n = (Nx+Ny+Nz)/3;  
+  for (int k = 1; k < Nz - 1; k++) {
+        for (int j = 1; j < Ny - 1; j++) {
+            for (int i = 1; i < Nx - 1; i++) {
                 div[IX(i, j, k)] = -0.5f*(
                          velocX[IX(i+1, j  , k  )]
                         -velocX[IX(i-1, j  , k  )]
@@ -207,7 +208,7 @@ void project(float[] velocX, float[] velocY, float[] velocZ, float[] p, float[] 
                         -velocY[IX(i  , j-1, k  )]
                         +velocZ[IX(i  , j  , k+1)]
                         -velocZ[IX(i  , j  , k-1)]
-                    )/N;
+                    )/n;
                 p[IX(i, j, k)] = 0;
             }
         }
@@ -216,15 +217,15 @@ void project(float[] velocX, float[] velocY, float[] velocZ, float[] p, float[] 
     set_bnd(0, p);
     lin_solve(0, p, div, 1, 6, iter);
     
-    for (int k = 1; k < N - 1; k++) {
-        for (int j = 1; j < N - 1; j++) {
-            for (int i = 1; i < N - 1; i++) {
+    for (int k = 1; k < Nz - 1; k++) {
+        for (int j = 1; j < Ny - 1; j++) {
+            for (int i = 1; i < Nx - 1; i++) {
                 velocX[IX(i, j, k)] -= 0.5f * (  p[IX(i+1, j, k)]
-                                                -p[IX(i-1, j, k)]) * N;
+                                                -p[IX(i-1, j, k)]) * Nx;
                 velocY[IX(i, j, k)] -= 0.5f * (  p[IX(i, j+1, k)]
-                                                -p[IX(i, j-1, k)]) * N;
+                                                -p[IX(i, j-1, k)]) * Ny;
                 velocZ[IX(i, j, k)] -= 0.5f * (  p[IX(i, j, k+1)]
-                                                -p[IX(i, j, k-1)]) * N;
+                                                -p[IX(i, j, k-1)]) * Nz;
             }
         }
     }
@@ -237,18 +238,18 @@ void advect(int b, float[] d, float[] d0,  float[] velocX, float[] velocY, float
 {
     float i0, i1, j0, j1, k0, k1;
     
-    float dtx = dt * (N - 2);
-    float dty = dt * (N - 2);
-    float dtz = dt * (N - 2);
+    float dtx = dt * (Nx - 2);
+    float dty = dt * (Ny - 2);
+    float dtz = dt * (Nz - 2);
     
     float s0, s1, t0, t1, u0, u1;
     float tmp1, tmp2, tmp3, x, y, z;
-    
+
     int i, j, k;
     
-    for(k = 1; k < N - 1; k++) {
-        for(j = 1; j < N - 1; j++) { 
-            for(i = 1; i < N - 1; i++) {
+    for(k = 1 ; k < Nz - 1; k++) {
+        for(j = 1; j < Ny - 1; j++) { 
+            for(i = 1; i < Nx - 1; i++) {
                 tmp1 = dtx * velocX[IX(i, j, k)];
                 tmp2 = dty * velocY[IX(i, j, k)];
                 tmp3 = dtz * velocZ[IX(i, j, k)];
@@ -256,9 +257,9 @@ void advect(int b, float[] d, float[] d0,  float[] velocX, float[] velocY, float
                 y    = j - tmp2;
                 z    = k - tmp3;
                 
-                x= constrain(x, 0.5, N+0.5);
-                y= constrain(y, 0.5, N+0.5);
-                z= constrain(z, 0.5, N+0.5);
+                x= constrain(x, 0.5, Nx+0.5);
+                y= constrain(y, 0.5, Ny+0.5);
+                z= constrain(z, 0.5, Nz+0.5);
                 i0 = floor(x); 
                 i1 = i0 + 1;
                 j0 = floor(y);
@@ -267,11 +268,11 @@ void advect(int b, float[] d, float[] d0,  float[] velocX, float[] velocY, float
                 k1 = k0 + 1;
                 
                 s1 = x - i0; 
-                s0 = 1 - s1; 
+                s0 = 1.0f - s1; 
                 t1 = y - j0; 
-                t0 = 1 - t1;
+                t0 = 1.0f - t1;
                 u1 = z - k0;
-                u0 = 1 - u1;
+                u0 = 1.0f - u1;
                 
                 int i0i = int(i0);
                 int i1i = int(i1);

@@ -1,7 +1,7 @@
-//static int Nx = 20, Ny=15, Nz=15; //number of grids in horizontal and vertical direction
-int N = 50;
+static int Nx = 50, Ny=50, Nz=50; //number of grids in horizontal and vertical direction
+//int N = 50;
 static int M = 4; //number of pixels in each grid
-float S = N*M;
+float Sx = Nx*M, Sy = Ny*M, Sz = Nz*M;
 float dt = 0.1; //time step
 float VyMax = 1;
 
@@ -13,26 +13,33 @@ float xStart = -120;
 float yStart = -120;
 
 boolean windEnable = false;
+PShape log;
+float logX = Nx/2*M+xStart,logY = Ny*M+yStart,logZ = Nz/2*M+zStart;
 
 Camera camera;
 
 void settings(){
-  size((N)*M+1000,(N)*M+800, P3D);
+  size((Nx)*M+1000,(Nx)*M+800, P3D);
 }
 
 void setup(){
   camera = new Camera();
   fluid = new Fluid(0.00005,0.000001);
+  log = loadShape("WoodLog.obj");
 }
 
 void draw(){
   println(frameRate);
   camera.Update(1/frameRate);
-  background(255);  
+  background(255); 
+  specular(120, 120, 180);  //Setup lights… 
+  ambientLight(200,200,200);   //More light…  
+  lightSpecular(255,255,255); shininess(10);  //More light…
+  directionalLight(220, 220, 255, -1, 1, -1); //More light…
   //Add smoke source
-  int cx = int(N/2);//smokePos.x/M);
-  int cy = int(N-2);//smokePos.y/M);
-  int cz = int(N/2);//smokePos.z/M);
+  int cx = int(Nx/2);
+  int cy = int(Ny-2);
+  int cz = int(Nz/2);
   for (int i = -6; i <= 6; i++) {
     for (int j = 0; j <= 5; j++) {
       for (int k = -6; k <= 6; k++) {
@@ -45,6 +52,17 @@ void draw(){
   fluid.show();  
   fluid.fade(0.1);
   drawPlatForm();
+  pushMatrix();
+  noStroke();
+  fill(#6a4940);
+  translate(logX, logY, logZ);
+  scale(35);
+  rotateY(PI/4);
+  rotateZ(PI);
+  shape(log);
+  rotateY(PI/2);
+  shape(log);
+  popMatrix();
 }
 
 void keyPressed(){
@@ -67,41 +85,41 @@ void drawPlatForm(){
   strokeWeight(1);
   fill(#00ab66, 50);
   beginShape();
-  vertex(0, S, -0);
-  vertex(S, S, -0);
-  vertex(S, S, S);
-  vertex(0, S, S);
+  vertex(0, Sy, -0);
+  vertex(Sx, Sy, -0);
+  vertex(Sx, Sy, Sz);
+  vertex(0, Sy, Sz);
   endShape(CLOSE);
   noFill();
   beginShape();
   vertex(0, 0, -0);
-  vertex(S, 0, -0);
-  vertex(S, 0, S);
-  vertex(0, 0, S);
+  vertex(Sx, 0, -0);
+  vertex(Sx, 0, Sz);
+  vertex(0, 0, Sz);
   endShape(CLOSE);
   beginShape();
-  vertex(S, 0, -0);
-  vertex(S, S, -0);
-  vertex(S, S, S);
-  vertex(S, 0, S);
+  vertex(Sx, 0, -0);
+  vertex(Sx, Sy, -0);
+  vertex(Sx, Sy, Sz);
+  vertex(Sx, 0, Sz);
   endShape(CLOSE);
   beginShape();
   vertex(0, 0, -0);
-  vertex(0, S, -0);
-  vertex(0, S, S);
-  vertex(0, 0, S);
+  vertex(0, Sy, -0);
+  vertex(0, Sy, Sz);
+  vertex(0, 0, Sz);
   endShape(CLOSE);
   beginShape();
-  vertex(0, 0, S);
-  vertex(0, S, S);
-  vertex(S, S, S);
-  vertex(S, 0, S);
+  vertex(0, 0, Sz);
+  vertex(0, Sy, Sz);
+  vertex(Sx, Sy, Sz);
+  vertex(Sx, 0, Sz);
   endShape(CLOSE);
   beginShape();
-  vertex(0, 0, S);
-  vertex(0, S, S);
-  vertex(S, S, S);
-  vertex(S, 0, S);
+  vertex(0, 0, Sz);
+  vertex(0, Sy, Sz);
+  vertex(Sx, Sy, Sz);
+  vertex(Sx, 0, Sz);
   endShape(CLOSE);
   popMatrix();
 }

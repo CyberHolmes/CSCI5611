@@ -98,6 +98,21 @@ class Fluid{
       offset += 0.1;
     }
   }
+  void showFlow() {
+    for (int i = 0; i < Nx; i++) {
+      for (int j = 0; j < Ny; j++) {
+        float x = i * M;
+        float y = j * M;
+        float vx = u[IX(i, j)];
+        float vy = v[IX(i, j)];
+        stroke(255);
+        strokeWeight(1);
+        if (!(abs(vx) < 0.1 && abs(vy) <= 0.1)) {
+          line(x, y, x+vx*M, y+vy*M );
+        }
+      }
+    }
+  }
 }
 
 void diffuse (int b, float[]  x, float[]  x0, float diff)

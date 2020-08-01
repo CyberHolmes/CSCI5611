@@ -2,14 +2,13 @@
 static int M = 6; //number of pixels in each grid
 static int Nx = int(1024/M), Ny=int(824/M); //number of grids in horizontal and vertical direction
 float dt = 0.01; //time step
-float viscosity = 0.0010, diffusionRate = 0.00005000;
+float viscosity = 0.0010, diffusionRate = 0.0000001;
 float viscosityMax = 0.8, diffusionRateMax = 0.2;
 float rateIncreaseFactor = 1;
 boolean windEnable = false;
 boolean showDensity = false; //show fluid density at mouse position
 
 Fluid fluid;
-float t = 0;
 PFont font;
 
 int colorChoice =0; //brush color
@@ -24,9 +23,9 @@ void settings(){
 void setup(){
   fluid = new Fluid(diffusionRate,viscosity);
   font = loadFont("Calibri-40.vlw");
-  baseColor[0]=254; //50; //250;
-  baseColor[1]=254;//205;//215;
-  baseColor[2]=254;//50;//0;
+  baseColor[0]=135;//1;//50; //250;
+  baseColor[1]=206;//200;//205;//215;
+  baseColor[2]=235;//94;//50;//0;
 }
 
 void draw(){
@@ -61,53 +60,35 @@ void draw(){
 void mousePressed(){
   int cx = int(mouseX/M), cy = int(mouseY/M);
   float val = 255;
-  if (mouseButton == LEFT){ 
-    //float t = 0;
     for (int i = -brushSize; i <= brushSize; i++) {
       for (int j = -brushSize; j <= brushSize; j++) {
         fluid.add_source(cx+i, cy+j, colorChoice, val);
-        float angle = noise(i,j) * PI*2;
-        Vec2 v = new Vec2(cos(angle), sin(angle));
-        v.mul(0.2);      
-        fluid.add_velocity(cx, cy, v.x, v.y );
-        //t += 0.01;
+        fluid.add_velocity(cx, cy, random(0.05,0.2), random(0.05,0.2) );
       }
     }
-  } else {
-    for (int i = -brushSize; i <= brushSize; i++) {
-      for (int j = -brushSize; j <= brushSize; j++) {
-        fluid.add_source(cx+i, cy+j, colorChoice, 0);
-      }
-    }
-  }
 }
 
 void mouseDragged(){
   int cx = int(mouseX/M), cy = int(mouseY/M),cx0,cy0;
   float f = 0.02;
   float val = 255;
-  if (mouseButton == LEFT){ 
-    //float t = 0;
+  //if (mouseButton == LEFT){ 
     for (int i = -brushSize; i <= brushSize; i++) {
       for (int j = -brushSize; j <= brushSize; j++) {
         cx0=cx+i; cy0=cy+j;
-        fluid.add_source(cx0, cy0, colorChoice, val);//random(100,255));
-        //float angle = noise(i,j) * PI*2;
-        //Vec2 v = new Vec2(cos(angle), sin(angle));
-        //v.mul(0.2);      
-        fluid.add_velocity(cx, cy, (mouseX-pmouseX)*f, (mouseY-pmouseY)*f );
-        //t += 0.015;
-      }
-    }
-  } else {
-    for (int i = -brushSize; i <= brushSize; i++) {
-      for (int j = -brushSize; j <= brushSize; j++) {        
-        cx0=cx+i; cy0=cy+j;
-        fluid.add_source(cx0, cy0, colorChoice, 0);
+        fluid.add_source(cx0, cy0, colorChoice, val);     
         fluid.add_velocity(cx, cy, (mouseX-pmouseX)*f, (mouseY-pmouseY)*f );
       }
     }
-  }
+  //} else {
+  //  for (int i = -brushSize; i <= brushSize; i++) {
+  //    for (int j = -brushSize; j <= brushSize; j++) {        
+  //      cx0=cx+i; cy0=cy+j;
+  //      fluid.add_source(cx0, cy0, colorChoice, 0);
+  //      fluid.add_velocity(cx, cy, (mouseX-pmouseX)*f, (mouseY-pmouseY)*f );
+  //    }
+  //  }
+  //}
 }
 
 void keyPressed(){
@@ -136,6 +117,9 @@ void keyPressed(){
   if ( key == 'q' ) brushSize = max(brushSize-1,brushSizeMin);
   if ( key == 's' ) showDensity = !showDensity;
   if (keyCode == SHIFT) {rateIncreaseFactor = 10;}
+  for (int i=0; i<3; i++){
+    if (baseColor[i]==0) baseColor[i]=1;
+  }
 }
 
 void keyReleased(){
